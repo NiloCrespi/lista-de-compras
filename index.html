@@ -3,19 +3,63 @@
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>Lista de compras</title>
-    <link rel="stylesheet" href="./stylesheet.css">
+    <title>Lista de Compras</title>
+    <style>
+        body {
+            font-family: Arial, sans-serif;
+            text-align: center;
+            margin: 20px;
+        }
+
+        #shopping-list {
+            max-width: 400px;
+            margin: 0 auto;
+        }
+    </style>
 </head>
 <body>
-    <h1>La asombrosa lista de compras de sere y nilo</h1>
+    <h1>Lista de Compras</h1>
 
-    <div id="todo-list">
-        <input type="text" id="new-task" placeholder="Add a new task">
-        <button onclick="addTask()">Agregar item</button>
-        <ul id="tasks" onclick="taskClick(event)"></ul>
-        <button onclick="deleteCompletedTasks()">Borrar items tachado</button>
+    <div id="shopping-list">
+        <input type="text" id="new-item" placeholder="Agregar nuevo ítem">
+        <button onclick="addItem()">Agregar ítem</button>
+        <ul id="items"></ul>
     </div>
 
-    <script src="./script.js"></script>
-</body>
-</html>
+    <!-- Agrega el SDK de Firebase -->
+    <script src="https://www.gstatic.com/firebasejs/9.3.0/firebase-app.js"></script>
+    <script src="https://www.gstatic.com/firebasejs/9.3.0/firebase-firestore.js"></script>
+
+    <script>
+        // Configuración de Firebase
+        const firebaseConfig = {
+            apiKey: "AIzaSyDBaW4izyoSdI2EaGPg7CMOOBBrmklQ4FM",
+            authDomain: "lista-de-compras-d1a9d.firebaseapp.com",
+            projectId: "lista-de-compras-d1a9d",
+            storageBucket: "lista-de-compras-d1a9d.appspot.com",
+            messagingSenderId: "722315969601",
+            appId: "1:722315969601:web:505569dfc68bddfa3732c0"
+        };
+
+        // Inicializa Firebase
+        firebase.initializeApp(firebaseConfig);
+
+        // Obtiene referencia a la colección de ítems en Firestore
+        const itemsCollection = firebase.firestore().collection('items');
+
+        // Carga los ítems existentes
+        loadItems();
+
+        function loadItems() {
+            // Real-time update cuando los ítems cambian
+            itemsCollection.onSnapshot(snapshot => {
+                document.getElementById('items').innerHTML = '';
+                snapshot.forEach(doc => {
+                    appendItem(doc.id, doc.data().name);
+                });
+            });
+        }
+
+        function addItem() {
+            const newItemInput = document.getElementById('new-item');
+            const itemNam
